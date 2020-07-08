@@ -6,7 +6,6 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
-import org.apache.pdfbox.text.TextPosition;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,116 +25,88 @@ public class PDF {
 
     public void makePDF(){
         try {
+            // PDF Document and font
             PDDocument document = new PDDocument();
-            PDPage page = new PDPage();
-            PDPageContentStream contentStream = new PDPageContentStream(document, page);
-
             PDFont font = PDTrueTypeFont.loadTTF(document, new File("./assets/Fonts/Anonymous Pro.ttf"));
+
+            // WordSearchPage
+            PDPage wordSearchPage = new PDPage();
+            PDPageContentStream contentStreamForWordSearchPage = new PDPageContentStream(document, wordSearchPage);
 
             //----------
             //  Title
             //----------
-
-            //Begin the Content stream
-            contentStream.beginText();
-
             int titleFontSize = 20;
-
-            //Setting the font to the Content stream
-            contentStream.setFont(font, titleFontSize);
-
-            float widthTitle = font.getStringWidth(titleText) / 1000 * titleFontSize;
-
-            //Setting the position for the line
-            contentStream.newLineAtOffset(
-                    page.getMediaBox().getWidth()/2 - (widthTitle/2),
-                    page.getMediaBox().getHeight() - 50);
-
-            //Adding text in the form of string
-            contentStream.showText(titleText);
-
-            //Ending the content stream
-            contentStream.endText();
+            placeText(contentStreamForWordSearchPage, font,
+                    wordSearchPage.getMediaBox().getWidth()/2,
+                    wordSearchPage.getMediaBox().getHeight() - 50,
+                    titleFontSize,
+                    titleText,
+                    true);
 
             //----------
             //  Puzzle
             //----------
-
-            //Begin the Content stream
-            contentStream.beginText();
-
-            //puzzle fontsize
             int puzzleFontSize = 9;
-
             String[] puzzleTextArray = puzzle.puzzleBoardAsStringArray();
-
-            //Setting the font to the Content stream
-            contentStream.setFont(font, puzzleFontSize);
-
-            //Setting the leading
-            contentStream.setLeading(puzzleFontSize+0.1f);
-
-            //Setting the character spacing
-            contentStream.setCharacterSpacing(5f);
-
-            float widthPuzzle = font.getStringWidth(puzzle.line1puzzleBoardAsString()) / 1000 * puzzleFontSize;
-
-            //Setting the position for the line
-            contentStream.newLineAtOffset(
-                    page.getMediaBox().getWidth()/2 - (widthPuzzle/2),
-                    page.getMediaBox().getHeight() - 75);
-
-            for (int x = 0; x < puzzleTextArray.length; x++) {
-                contentStream.newLine();
-                //Adding text in the form of string
-                contentStream.showText(puzzleTextArray[x].substring(4,puzzle.puzzleBoardSize+4));
+            float height = (font.getFontDescriptor().getFontBoundingBox().getHeight() / 1000 * puzzleFontSize);
+            for (int i = 0; i < puzzleTextArray.length; i++) {
+                placeText(contentStreamForWordSearchPage, font,
+                        wordSearchPage.getMediaBox().getWidth()/2,
+                        wordSearchPage.getMediaBox().getHeight() - (75 + i*height),
+                        puzzleFontSize,
+                        puzzleTextArray[i].substring(4,puzzle.puzzleBoardSize+4),
+                        true,
+                        5f);
             }
-
-            //Ending the content stream
-            contentStream.endText();
 
             //---------------
             //  Words Title
             //---------------
-
-            contentStream.beginText();
-
             float heightPuzzle = (font.getFontDescriptor().getFontBoundingBox().getHeight() / 1000 * puzzleFontSize) * puzzleTextArray.length;
-
             String wordsTitle = "Find the following " + puzzle.words.length + " words:";
+            int wordsTitleFontSize = 14;
+            placeText(contentStreamForWordSearchPage, font,
+                    wordSearchPage.getMediaBox().getWidth()/2 - 10,
+                    wordSearchPage.getMediaBox().getHeight() - (75 + heightPuzzle + 20),
+                    wordsTitleFontSize,
+                    wordsTitle,
+                    true);
 
-            int wordsTitleFontSize = 12;
+            //-------------
+            // Words list
+            //-------------
+            int wordsFontSize = 11;
+            String[] words =  Main.readWordsFile(Main.wordsFilePath);
+            float outLineSize = 40f;
+            float thirdWidth = (wordSearchPage.getMediaBox().getWidth() - (outLineSize*2))/3;
+            float heightOfWords = (font.getFontDescriptor().getFontBoundingBox().getHeight() / 1000 * wordsFontSize);
+            for (int i = 0, y = 0; i < words.length; y++) {
+                for (int j = 0; j < 3; j++) {
+                    if (i < words.length){
+                        placeText(contentStreamForWordSearchPage, font,
+                                outLineSize + (j*thirdWidth) + (thirdWidth/2),
+                                wordSearchPage.getMediaBox().getHeight() - (75 + heightPuzzle + 20 + 20 + (y*heightOfWords)),
+                                wordsFontSize,
+                                words[i],
+                                true);
+                    }
+                    i++;
+                }
+            }
 
-            //Setting the font to the Content stream
-            contentStream.setFont(font, puzzleFontSize);
-
-            //Setting the leading
-            contentStream.setLeading(wordsTitleFontSize+0.1f);
-
-            //Setting the character spacing
-            contentStream.setCharacterSpacing(-5f);
-
-            //Setting the leading
-            contentStream.setLeading(wordsTitleFontSize+0.1f);
-
-            //Setting the character spacing
-            contentStream.setCharacterSpacing(5f);
-
-            float widthWordsTitle = font.getStringWidth(wordsTitle) / 1000 * wordsTitleFontSize;
-
-            //Setting the position for the line
-            contentStream.newLineAtOffset(
-                    page.getMediaBox().getWidth()/2 - ((widthWordsTitle/2)+50),
-                    page.getMediaBox().getHeight() - (70 + heightPuzzle));
-
-            contentStream.showText(wordsTitle);
-
-            contentStream.endText();
+            // -----------
+            // adding page
+            // -----------
 
             //Closing the content stream
-            contentStream.close();
+            contentStreamForWordSearchPage.close();
 
-            document.addPage(page);
+            document.addPage(wordSearchPage);
+
+            // ------------------------------
+            // Writing final info to document
+            // ------------------------------
 
             //Creating the PDDocumentInformation object
             PDDocumentInformation pdd = document.getDocumentInformation();
@@ -164,8 +135,49 @@ public class PDF {
 
             //Closing the document
             document.close();
-        } catch (IOException e){
+        }catch (IOException e){
             e.printStackTrace();
         }
+    }
+
+    private void placeText(PDPageContentStream contentStream, PDFont font, float x, float y, int textSize, String text) throws IOException {
+        placeText(contentStream, font, x, y, textSize, text, false, 1f);
+    }
+
+    private void placeText(PDPageContentStream contentStream, PDFont font, float x, float y, int textSize, String text, boolean center) throws IOException {
+        placeText(contentStream, font, x, y, textSize, text, center, 1f);
+    }
+
+    private void placeText(PDPageContentStream contentStream, PDFont font, float x, float y, int textSize, String text, boolean center, float characterSpacing) throws IOException {
+        //Begin the Content stream
+        contentStream.beginText();
+
+        //Setting the font to the Content stream
+        contentStream.setFont(font, textSize);
+
+        //Setting the leading
+        contentStream.setLeading(textSize+0.1f);
+
+        //Setting the character spacing
+        contentStream.setCharacterSpacing(characterSpacing);
+
+        if (center) {
+            float width;
+            if (characterSpacing != 1f) {
+                width = (font.getStringWidth(text) / 1000 * textSize) * (characterSpacing / 2.5f);
+            } else {
+                width = (font.getStringWidth(text) / 1000 * textSize);
+            }
+            contentStream.newLineAtOffset( x - (width/2), y);
+        }else {
+            //Setting the position for the line
+            contentStream.newLineAtOffset(x, y);
+        }
+
+        //Adding text in the form of string
+        contentStream.showText(text);
+
+        //Ending the content stream
+        contentStream.endText();
     }
 }
