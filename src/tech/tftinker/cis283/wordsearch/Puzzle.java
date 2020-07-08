@@ -81,6 +81,7 @@ public class Puzzle extends Thread {
 
         if (!stopFlag){
             puzzleBoard = insertRandChar(puzzleBoard);
+            puzzleKeyBoard = insertSpaceChar(puzzleKeyBoard);
             if (Main.debugShowEverythingFlag){
                 System.out.println("done inserting random chars");
                 System.out.println("PuzzleBoard ID: " + puzzleBoard.toString());
@@ -159,6 +160,17 @@ public class Puzzle extends Thread {
                 if (puzzleBoard[x][y] == Main.charBlank) {
                     int rnd = new Random().nextInt(chars.length);
                     puzzleBoard[x][y] = chars[rnd];
+                }
+            }
+        }
+        return puzzleBoard;
+    }
+
+    public char[][] insertSpaceChar(char[][] puzzleBoard) {
+        for (int x = 0; x < puzzleBoard.length; x++) {
+            for (int y = 0; y < puzzleBoard[x].length; y++) {
+                if (puzzleBoard[x][y] == Main.charBlank) {
+                    puzzleBoard[x][y] = ' ';
                 }
             }
         }

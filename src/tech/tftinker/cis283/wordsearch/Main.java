@@ -48,9 +48,13 @@ public class Main {
         }
         // Sorting words
         Arrays.sort(words, (a,b)->b.length() - a.length());
+        for (int i = 0; i < words.length; i++) {
+            words[i] = words[i].toLowerCase();
+        }
         if (debugShowEverythingFlag){
             System.out.println("\nWords sorting");
         }
+
 
         if (debugPhaseFlag){
             phasePrint("getting all chars from words");
@@ -62,8 +66,12 @@ public class Main {
                 System.out.println(words[i]);
             }
             for (int j = 0; j < words[i].length(); j++) {
-                chars = Arrays.copyOf(chars, chars.length +1);
-                chars[chars.length - 1] = words[i].charAt(j);
+                if (words[i].charAt(j) != ' ') {
+                    chars = Arrays.copyOf(chars, chars.length + 1);
+                    chars[chars.length - 1] = words[i].charAt(j);
+                }else {
+                    words[i] = words[i].replace(' ', charBlank);
+                }
             }
         }
 
