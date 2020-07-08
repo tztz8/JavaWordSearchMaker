@@ -104,6 +104,70 @@ public class PDF {
 
             document.addPage(wordSearchPage);
 
+            // WordSearchPage
+            PDPage keyWordSearchPage = new PDPage();
+            PDPageContentStream contentStreamForKeyWordSearchPage = new PDPageContentStream(document, keyWordSearchPage);
+
+            //----------
+            //  Title
+            //----------
+            placeText(contentStreamForKeyWordSearchPage, font,
+                    keyWordSearchPage.getMediaBox().getWidth()/2,
+                    keyWordSearchPage.getMediaBox().getHeight() - 50,
+                    titleFontSize,
+                    titleText + " - KEY",
+                    true);
+
+            //----------
+            //  Puzzle
+            //----------
+            String[] keyPuzzleTextArray = puzzle.keyPuzzleBoardAsStringArray();
+            for (int i = 0; i < puzzleTextArray.length; i++) {
+                placeText(contentStreamForKeyWordSearchPage, font,
+                        keyWordSearchPage.getMediaBox().getWidth()/2,
+                        keyWordSearchPage.getMediaBox().getHeight() - (75 + i*height),
+                        puzzleFontSize,
+                        keyPuzzleTextArray[i].substring(4,puzzle.puzzleBoardSize+4),
+                        true,
+                        5f);
+            }
+
+            //---------------
+            //  Words Title
+            //---------------
+            placeText(contentStreamForKeyWordSearchPage, font,
+                    keyWordSearchPage.getMediaBox().getWidth()/2 - 10,
+                    keyWordSearchPage.getMediaBox().getHeight() - (75 + heightPuzzle + 20),
+                    wordsTitleFontSize,
+                    "The Words are:",
+                    true);
+
+            //-------------
+            // Words list
+            //-------------
+            for (int i = 0, y = 0; i < words.length; y++) {
+                for (int j = 0; j < 3; j++) {
+                    if (i < words.length){
+                        placeText(contentStreamForKeyWordSearchPage, font,
+                                outLineSize + (j*thirdWidth) + (thirdWidth/2),
+                                keyWordSearchPage.getMediaBox().getHeight() - (75 + heightPuzzle + 20 + 20 + (y*heightOfWords)),
+                                wordsFontSize,
+                                words[i],
+                                true);
+                    }
+                    i++;
+                }
+            }
+
+            // -----------
+            // adding page
+            // -----------
+
+            //Closing the content stream
+            contentStreamForKeyWordSearchPage.close();
+
+            document.addPage(keyWordSearchPage);
+
             // ------------------------------
             // Writing final info to document
             // ------------------------------
