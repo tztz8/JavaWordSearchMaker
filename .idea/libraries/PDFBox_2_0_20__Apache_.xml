@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="PDFBox 2.0.20 (Apache)">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/fontbox-2.0.20.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/pdfbox-2.0.20.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/pdfbox-debugger-2.0.20.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/pdfbox-tools-2.0.20.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/preflight-2.0.20.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/xmpbox-2.0.20.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

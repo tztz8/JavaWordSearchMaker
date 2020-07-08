@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -18,11 +17,14 @@ import java.util.concurrent.TimeUnit;
 
 public class Main {
     // Debugging Flag
-    public final static boolean debugShowEverythingFlag = true;
+    public final static boolean debugShowEverythingFlag = false;
     public final static boolean debugPhaseFlag = true;
+    public final static boolean debugAutoOpenUsingAcrobatWindows = true;
 
-    // Words File Path
+    // File Paths
     public final static String wordsFilePath = "./assets/words.txt";
+    public final static String pdfFilePath = "./assets/pdf/puzzle.pdf";
+    public final static String acrobatWindowsPath = "\"C:\\Program Files (x86)\\Adobe\\Acrobat Reader DC\\Reader\\\\AcroRd32.exe\" ";
 
     // chars
     public final static char debugPhaseBorder = '*';
@@ -83,7 +85,31 @@ public class Main {
         }
         if (debugShowEverythingFlag){
             System.out.println("Time to run : " + (System.nanoTime() - startTime) + " nano seconds");
+            System.out.println("Puzzle Board");
             System.out.println(puzzle.puzzleBoardAsString());
+            System.out.println("Puzzle Key Board");
+            System.out.println(puzzle.keyPuzzleBoardAsString());
+        }
+
+        if (!puzzle.stopFlag) {
+            if (debugPhaseFlag) {
+                phasePrint("Starting PDF Maker");
+            }
+            PDF pdfMaker = new PDF(pdfFilePath, puzzle);
+            if (debugPhaseFlag) {
+                phasePrint("Making PDF");
+            }
+            pdfMaker.makePDF();
+            if (debugAutoOpenUsingAcrobatWindows){
+                if (debugPhaseFlag) {
+                    phasePrint("Open the PDF");
+                }
+                try {
+                    Runtime.getRuntime().exec(acrobatWindowsPath + "\"" + pdfFilePath + "\"");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 

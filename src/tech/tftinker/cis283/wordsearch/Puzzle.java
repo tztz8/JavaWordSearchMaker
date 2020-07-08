@@ -1,6 +1,7 @@
 package tech.tftinker.cis283.wordsearch;
 
 import java.util.Arrays;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class Puzzle extends Thread {
@@ -38,11 +39,17 @@ public class Puzzle extends Thread {
             System.out.println("WordData x's and y's");
             System.out.println("xS ("+WordData.xS.length+"): " + Arrays.toString(WordData.xS));
             System.out.println("yS ("+WordData.yS.length+"): " + Arrays.toString(WordData.yS));
+            System.out.println("PuzzleBoard ID: " + puzzleBoard.toString());
+            System.out.println("Key PuzzleBoard ID: " + puzzleKeyBoard.toString());
         }
     }
 
     @Override
     public void run(){
+        if (Main.debugShowEverythingFlag){
+            System.out.println("PuzzleBoard ID: " + puzzleBoard.toString());
+            System.out.println("Key PuzzleBoard ID: " + puzzleKeyBoard.toString());
+        }
         for (int i = 0; (i < wordsData.length) && (!stopFlag); i++) {
             boolean works = true;
             int trys = 0;
@@ -53,7 +60,7 @@ public class Puzzle extends Thread {
                 trys++;
                 if (checkWordPlace(wordsData[i], puzzleBoard) || (!wordsData[i].failed)){
                     puzzleBoard = placeWord(wordsData[i], puzzleBoard);
-                    puzzleKeyBoard = placeWord(wordsData[i], puzzleBoard);
+                    puzzleKeyBoard = placeWord(wordsData[i], puzzleKeyBoard);
                     works = true;
                     trys = 0;
                 } else{
@@ -69,7 +76,16 @@ public class Puzzle extends Thread {
 
         }
         if (Main.debugShowEverythingFlag && (!stopFlag)){
-            System.out.println("done");
+            System.out.println("done inserting words");
+        }
+
+        if (!stopFlag){
+            puzzleBoard = insertRandChar(puzzleBoard);
+            if (Main.debugShowEverythingFlag){
+                System.out.println("done inserting random chars");
+                System.out.println("PuzzleBoard ID: " + puzzleBoard.toString());
+                System.out.println("Key PuzzleBoard ID: " + puzzleKeyBoard.toString());
+            }
         }
 
         if (stopFlag){
@@ -79,6 +95,9 @@ public class Puzzle extends Thread {
 
     public String puzzleBoardAsString(){
         return puzzleBoardAsString(this.puzzleBoard);
+    }
+    public String keyPuzzleBoardAsString() {
+        return puzzleBoardAsString(this.puzzleKeyBoard);
     }
 
     public String puzzleBoardAsString(char[][] puzzleBoard){
@@ -92,11 +111,54 @@ public class Puzzle extends Thread {
         return returnString;
     }
 
+    public String[] puzzleBoardAsStringArray(){
+        return puzzleBoardAsStringArray(this.puzzleBoard);
+    }
+    public String[] keyPuzzleBoardAsStringArray() {
+        return puzzleBoardAsStringArray(this.puzzleKeyBoard);
+    }
+
+    public String[] puzzleBoardAsStringArray(char[][] puzzleBoard){
+        String[] returnString = new String[puzzleBoardSize];
+        for (int x = 0; x < puzzleBoardSize; x++) {
+            for (int y = 0; y < puzzleBoardSize; y++) {
+                returnString[x] = returnString[x] + puzzleBoard[x][y];
+            }
+            //returnString = returnString + "\n";
+        }
+        return returnString;
+    }
+
+    public String line1puzzleBoardAsString(){
+        return line1puzzleBoardAsString(puzzleBoard);
+    }
+
+    public String line1puzzleBoardAsString(char[][] puzzleBoard){
+        String returnString = "";
+        int x = 0;
+        for (int y = 0; y < puzzleBoardSize; y++) {
+            returnString = returnString + puzzleBoard[x][y] + " ";
+        }
+        return returnString;
+    }
+
     public char[][] placeWord(WordData wordData, char[][] puzzleBoard) {
         for (int xPrime = 0; xPrime < wordData.word.length(); xPrime++) {
             for (int yPrime = 0; yPrime < wordData.word.length(); yPrime++) {
                 if (puzzleBoard[wordData.x+xPrime][wordData.y+yPrime] == Main.charBlank) {
                     puzzleBoard[wordData.x + xPrime][wordData.y + yPrime] = wordData.charPlace[xPrime][yPrime];
+                }
+            }
+        }
+        return puzzleBoard;
+    }
+
+    public char[][] insertRandChar(char[][] puzzleBoard) {
+        for (int x = 0; x < puzzleBoard.length; x++) {
+            for (int y = 0; y < puzzleBoard[x].length; y++) {
+                if (puzzleBoard[x][y] == Main.charBlank) {
+                    int rnd = new Random().nextInt(chars.length);
+                    puzzleBoard[x][y] = chars[rnd];
                 }
             }
         }

@@ -7,6 +7,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="PDFBox 2.0.20 (Apache)" level="project" />
+    <orderEntry type="library" name="Commons Logging 1.2 (Apache)" level="project" />
   </component>
 </module>
-
