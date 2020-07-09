@@ -2,6 +2,16 @@
 Remade my CIS 283 PDF Word Search final project; using java insted of ruby.
 Useing PDFBox 2.0.20 to make the pdf
 
+--------------------------------
+| Welcome to Word Search Maker |
+--------------------------------------
+| Use "Help" to see this screen      |<br>
+| Use "Open" to auto open pdf puzzle |<br>
+| Use "All" to show everything       |<br>
+| Use "Word" to set word file path   |<br>
+| Use "Out" to set the PDF file output |
+----------------------------------------
+
 orginal doc -> md
 
 **Word Search**
