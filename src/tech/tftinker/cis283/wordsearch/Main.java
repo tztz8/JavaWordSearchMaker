@@ -22,6 +22,7 @@ public class Main {
     public static boolean debugShowEverythingFlag = false;
     public final static boolean debugPhaseFlag = true;
     public static boolean debugAutoOpen = false;
+    public static boolean debugPDFPhaseFlag = true;
 
     // File Paths
     public static String wordsFilePath = "./assets/words.txt";
@@ -111,7 +112,7 @@ public class Main {
             if (debugPhaseFlag) {
                 phasePrint("Starting PDF Maker");
             }
-            PDF pdfMaker = new PDF(pdfFilePath, puzzle, debugShowEverythingFlag);
+            PDF pdfMaker = new PDF(pdfFilePath, puzzle, debugPDFPhaseFlag);
             if (debugPhaseFlag) {
                 phasePrint("Making PDF");
             }

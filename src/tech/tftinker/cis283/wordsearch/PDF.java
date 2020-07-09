@@ -6,6 +6,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +38,14 @@ public class PDF {
         try {
             // PDF Document and font
             PDDocument document = new PDDocument();
-            PDFont font = PDTrueTypeFont.loadTTF(document, new File("./assets/Fonts/Anonymous Pro.ttf"));
+            File fontFile = new File("./assets/Fonts/Anonymous Pro.ttf");
+            PDFont font;
+            if (fontFile.exists()) {
+                 font = PDTrueTypeFont.loadTTF(document, fontFile);
+            } else {
+                printStage("Unable to find Anonymous Pro font - Using PDFBox Courier font");
+                font = PDType1Font.COURIER;
+            }
 
             // WordSearchPage
             PDPage wordSearchPage = new PDPage();
