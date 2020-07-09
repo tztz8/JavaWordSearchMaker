@@ -19,7 +19,7 @@ public class Main {
     // Debugging Flag
     public final static boolean debugShowEverythingFlag = false;
     public final static boolean debugPhaseFlag = true;
-    public final static boolean debugAutoOpenUsingAcrobatWindows = true;
+    public final static boolean debugAutoOpenUsingAcrobatWindows = false;
 
     // File Paths
     public final static String wordsFilePath = "./assets/words.txt";
@@ -52,7 +52,7 @@ public class Main {
             words[i] = words[i].toLowerCase();
         }
         if (debugShowEverythingFlag){
-            System.out.println("\nWords sorting");
+            System.out.println(ConsoleColors.BLUE + "\nWords sorting"  + ConsoleColors.RESET);
         }
 
 
@@ -63,7 +63,7 @@ public class Main {
         char[] chars = new char[0];
         for (int i = 0; i < words.length; i++) {
             if (debugShowEverythingFlag){
-                System.out.println(words[i]);
+                System.out.println(ConsoleColors.BLUE + words[i] + ConsoleColors.RESET);
             }
             for (int j = 0; j < words[i].length(); j++) {
                 if (words[i].charAt(j) != ' ') {
@@ -92,18 +92,20 @@ public class Main {
             }
         }
         if (debugShowEverythingFlag){
+            System.out.print(ConsoleColors.BLUE);
             System.out.println("Time to run : " + (System.nanoTime() - startTime) + " nano seconds");
             System.out.println("Puzzle Board");
             System.out.println(puzzle.puzzleBoardAsString());
             System.out.println("Puzzle Key Board");
             System.out.println(puzzle.keyPuzzleBoardAsString());
+            System.out.print(ConsoleColors.RESET);
         }
 
         if (!puzzle.stopFlag) {
             if (debugPhaseFlag) {
                 phasePrint("Starting PDF Maker");
             }
-            PDF pdfMaker = new PDF(pdfFilePath, puzzle);
+            PDF pdfMaker = new PDF(pdfFilePath, puzzle, true);
             if (debugPhaseFlag) {
                 phasePrint("Making PDF");
             }
@@ -142,19 +144,25 @@ public class Main {
             while (readerCount.readLine() != null) linesCount++;
             readerCount.close();
             if (debugShowEverythingFlag){
+                System.out.print(ConsoleColors.BLUE);
                 System.out.println("\nThere are " + linesCount + " words");
+                System.out.print(ConsoleColors.RESET);
             }
             words = new String[linesCount];
 
             reader = new BufferedReader(new FileReader(path));
             String line = reader.readLine();
             if(debugShowEverythingFlag){
+                System.out.print(ConsoleColors.BLUE);
                 System.out.println("\nWords in word list");
+                System.out.print(ConsoleColors.RESET);
             }
             int i = 0;
             while (line != null){
                 if(debugShowEverythingFlag){
+                    System.out.print(ConsoleColors.BLUE);
                     System.out.println(line);
+                    System.out.print(ConsoleColors.RESET);
                 }
                 words[i] = line;
                 i++;

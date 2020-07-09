@@ -36,19 +36,23 @@ public class Puzzle extends Thread {
             wordsData[i] = new WordData(words[i],puzzleBoardSize);
         }
         if (Main.debugShowEverythingFlag){
+            System.out.print(ConsoleColors.BLUE);
             System.out.println("WordData x's and y's");
             System.out.println("xS ("+WordData.xS.length+"): " + Arrays.toString(WordData.xS));
             System.out.println("yS ("+WordData.yS.length+"): " + Arrays.toString(WordData.yS));
             System.out.println("PuzzleBoard ID: " + puzzleBoard.toString());
             System.out.println("Key PuzzleBoard ID: " + puzzleKeyBoard.toString());
+            System.out.print(ConsoleColors.RESET);
         }
     }
 
     @Override
     public void run(){
         if (Main.debugShowEverythingFlag){
+            System.out.print(ConsoleColors.BLUE);
             System.out.println("PuzzleBoard ID: " + puzzleBoard.toString());
             System.out.println("Key PuzzleBoard ID: " + puzzleKeyBoard.toString());
+            System.out.print(ConsoleColors.RESET);
         }
         for (int i = 0; (i < wordsData.length) && (!stopFlag); i++) {
             boolean works = true;
@@ -69,23 +73,27 @@ public class Puzzle extends Thread {
 
                 if (trys > 15 || wordsData[i].failed){
                     works = true;
-                    System.out.println("Error word: \"" + wordsData[i].word + "\" did failed to be added to board with " + trys + " trys");
+                    System.out.println(ConsoleColors.RED_BOLD + "Error word: \"" + wordsData[i].word + "\" did failed to be added to board with " + trys + " trys" + ConsoleColors.RESET);
                     trys = 0;
                 }
             }while (!works && (!stopFlag));
 
         }
         if (Main.debugShowEverythingFlag && (!stopFlag)){
+            System.out.print(ConsoleColors.BLUE);
             System.out.println("done inserting words");
+            System.out.print(ConsoleColors.RESET);
         }
 
         if (!stopFlag){
             puzzleBoard = insertRandChar(puzzleBoard);
             puzzleKeyBoard = insertSpaceChar(puzzleKeyBoard);
             if (Main.debugShowEverythingFlag){
+                System.out.print(ConsoleColors.BLUE);
                 System.out.println("done inserting random chars");
                 System.out.println("PuzzleBoard ID: " + puzzleBoard.toString());
                 System.out.println("Key PuzzleBoard ID: " + puzzleKeyBoard.toString());
+                System.out.print(ConsoleColors.RESET);
             }
         }
 

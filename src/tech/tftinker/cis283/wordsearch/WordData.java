@@ -17,7 +17,9 @@ public class WordData {
 
     public WordData(String word, int puzzleBoardSize){
         if (Main.debugShowEverythingFlag){
+            System.out.print(ConsoleColors.BLUE);
             System.out.println("Make WordData for " + word);
+            System.out.print(ConsoleColors.RESET);
         }
         this.word = word;
 
@@ -46,7 +48,7 @@ public class WordData {
 
             if (trys > 25){
                 works = true;
-                System.out.println("Error word: \"" + word + "\" did failed to make word data " + trys + " trys");
+                System.out.println(ConsoleColors.RED_BOLD + "Error word: \"" + word + "\" did failed to make word data " + trys + " trys" + ConsoleColors.RESET);
                 failed = true;
                 trys = 0;
             }

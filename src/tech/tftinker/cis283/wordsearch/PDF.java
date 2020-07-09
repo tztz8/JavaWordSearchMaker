@@ -18,9 +18,19 @@ public class PDF {
     Puzzle puzzle;
     String titleText = "Word Search";
 
+    // Debugging Flag
+    boolean debugStageFlag;
+
     public PDF(String fileOutPathAndName, Puzzle puzzle){
         this.fileNameAndPath = fileOutPathAndName;
         this.puzzle = puzzle;
+        debugStageFlag = Main.debugShowEverythingFlag;
+    }
+
+    public PDF(String fileOutPathAndName, Puzzle puzzle, Boolean debugStageFlag){
+        this.fileNameAndPath = fileOutPathAndName;
+        this.puzzle = puzzle;
+        this.debugStageFlag = debugStageFlag;
     }
 
     public void makePDF(){
@@ -34,7 +44,7 @@ public class PDF {
             PDPageContentStream contentStreamForWordSearchPage = new PDPageContentStream(document, wordSearchPage);
 
             //----------
-            //  Title
+            printStage("Title");
             //----------
             int titleFontSize = 20;
             placeText(contentStreamForWordSearchPage, font,
@@ -45,7 +55,7 @@ public class PDF {
                     true);
 
             //----------
-            //  Puzzle
+            printStage("Puzzle");
             //----------
             int puzzleFontSize = 9;
             String[] puzzleTextArray = puzzle.puzzleBoardAsStringArray();
@@ -61,7 +71,7 @@ public class PDF {
             }
 
             //---------------
-            //  Words Title
+            printStage("Words Title");
             //---------------
             float heightPuzzle = (font.getFontDescriptor().getFontBoundingBox().getHeight() / 1000 * puzzleFontSize) * puzzleTextArray.length;
             String wordsTitle = "Find the following " + puzzle.words.length + " words:";
@@ -74,7 +84,7 @@ public class PDF {
                     true);
 
             //-------------
-            // Words list
+            printStage("Words list");
             //-------------
             int wordsFontSize = 11;
             String[] words =  Main.readWordsFile(Main.wordsFilePath);
@@ -96,9 +106,8 @@ public class PDF {
             }
 
             // -----------
-            // adding page
+            printStage("Adding Page");
             // -----------
-
             placeText(contentStreamForWordSearchPage, font,
                     wordSearchPage.getMediaBox().getWidth() - 125, 8,
                     6, "TFTinker-WordSearchMaker");
@@ -113,7 +122,7 @@ public class PDF {
             PDPageContentStream contentStreamForKeyWordSearchPage = new PDPageContentStream(document, keyWordSearchPage);
 
             //----------
-            //  Title
+            printStage("Title");
             //----------
             placeText(contentStreamForKeyWordSearchPage, font,
                     keyWordSearchPage.getMediaBox().getWidth()/2,
@@ -123,7 +132,7 @@ public class PDF {
                     true);
 
             //----------
-            //  Puzzle
+            printStage("Puzzle");
             //----------
             String[] keyPuzzleTextArray = puzzle.keyPuzzleBoardAsStringArray();
             for (int i = 0; i < puzzleTextArray.length; i++) {
@@ -137,7 +146,7 @@ public class PDF {
             }
 
             //---------------
-            //  Words Title
+            printStage("Words Title");
             //---------------
             placeText(contentStreamForKeyWordSearchPage, font,
                     keyWordSearchPage.getMediaBox().getWidth()/2 - 10,
@@ -147,7 +156,7 @@ public class PDF {
                     true);
 
             //-------------
-            // Words list
+            printStage("Words list");
             //-------------
             for (int i = 0, y = 0; i < words.length; y++) {
                 for (int j = 0; j < 3; j++) {
@@ -164,7 +173,7 @@ public class PDF {
             }
 
             // -----------
-            // adding page
+            printStage("adding page");
             // -----------
 
             placeText(contentStreamForKeyWordSearchPage, font,
@@ -177,7 +186,7 @@ public class PDF {
             document.addPage(keyWordSearchPage);
 
             // ------------------------------
-            // Writing final info to document
+            printStage("Writing final info to document");
             // ------------------------------
 
             //Creating the PDDocumentInformation object
@@ -209,6 +218,20 @@ public class PDF {
             document.close();
         }catch (IOException e){
             e.printStackTrace();
+        }
+    }
+
+    private void printStage(String stage){
+        if (debugStageFlag){
+            System.out.print(ConsoleColors.CYAN);
+            for (int i = 0; i < (stage.length()+4); i++) {
+                System.out.print("#");
+            }
+            System.out.println("\n" + "#" + " " + stage + " " + "#");
+            for (int i = 0; i < (stage.length()+4); i++) {
+                System.out.print("#");
+            }
+            System.out.println(ConsoleColors.RESET);
         }
     }
 
