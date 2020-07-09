@@ -1,6 +1,8 @@
 package tech.tftinker.cis283.wordsearch;
 
+import java.awt.*;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
@@ -17,14 +19,14 @@ import java.util.Arrays;
 
 public class Main {
     // Debugging Flag
-    public final static boolean debugShowEverythingFlag = false;
+    public static boolean debugShowEverythingFlag = false;
     public final static boolean debugPhaseFlag = true;
-    public final static boolean debugAutoOpenUsingAcrobatWindows = false;
+    public static boolean debugAutoOpen = false;
 
     // File Paths
-    public final static String wordsFilePath = "./assets/words.txt";
-    public final static String pdfFilePath = "./assets/pdf/puzzle.pdf";
-    public final static String acrobatWindowsPath = "\"C:\\Program Files (x86)\\Adobe\\Acrobat Reader DC\\Reader\\\\AcroRd32.exe\" ";
+    public static String wordsFilePath = "./assets/words.txt";
+    public static String pdfFilePath = "./assets/pdf/puzzle.pdf";
+    //public final static String acrobatWindowsPath = "\"C:\\Program Files (x86)\\Adobe\\Acrobat Reader DC\\Reader\\\\AcroRd32.exe\" ";
 
     // chars
     public final static char debugPhaseBorder = '*';
@@ -34,6 +36,10 @@ public class Main {
     public final static int puzzleSize = 45;
 
     public static void main(String[] args) {
+        if (args.length != 0){
+            MainWithArgs.run(args);
+        }
+
         if (debugPhaseFlag){
             phasePrint("Reading the words file");
         }
@@ -105,17 +111,26 @@ public class Main {
             if (debugPhaseFlag) {
                 phasePrint("Starting PDF Maker");
             }
-            PDF pdfMaker = new PDF(pdfFilePath, puzzle, true);
+            PDF pdfMaker = new PDF(pdfFilePath, puzzle, debugShowEverythingFlag);
             if (debugPhaseFlag) {
                 phasePrint("Making PDF");
             }
             pdfMaker.makePDF();
-            if (debugAutoOpenUsingAcrobatWindows){
+            if (debugAutoOpen){
                 if (debugPhaseFlag) {
                     phasePrint("Open the PDF");
                 }
                 try {
-                    Runtime.getRuntime().exec(acrobatWindowsPath + "\"" + pdfFilePath + "\"");
+                    File f = new File(pdfFilePath);
+                    if (f.exists()){
+                        if (Desktop.isDesktopSupported()){
+                            Desktop.getDesktop().open(f);
+                        }
+                    }else {
+                        System.out.println(ConsoleColors.RED_BOLD +
+                                "ERROR: Can't find PDF" +
+                                ConsoleColors.RESET);
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
