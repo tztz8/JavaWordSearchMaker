@@ -99,6 +99,10 @@ public class PDF {
             // adding page
             // -----------
 
+            placeText(contentStreamForWordSearchPage, font,
+                    wordSearchPage.getMediaBox().getWidth() - 125, 8,
+                    6, "TFTinker-WordSearchMaker");
+
             //Closing the content stream
             contentStreamForWordSearchPage.close();
 
@@ -162,6 +166,10 @@ public class PDF {
             // -----------
             // adding page
             // -----------
+
+            placeText(contentStreamForKeyWordSearchPage, font,
+                    keyWordSearchPage.getMediaBox().getWidth() - 125, 8,
+                    6, "TFTinker-WordSearchMaker");
 
             //Closing the content stream
             contentStreamForKeyWordSearchPage.close();
