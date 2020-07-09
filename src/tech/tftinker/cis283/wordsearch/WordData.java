@@ -1,5 +1,6 @@
 package tech.tftinker.cis283.wordsearch;
 
+import java.awt.*;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -8,13 +9,9 @@ public class WordData {
     public int x,y;
     public char[][] charPlace;
     public boolean failed = false;
-//    public static final String[] angles = {
-//            "Horizontal", "Vertical", "Diagonal",
-//            "Diagonal-Left", "Horizontal-Flip", "Vertical-Flip",
-//            "Diagonal-Flip", "Diagonal-Left-Flip"};
     public static final String[] angles = {
-        "Horizontal", "Vertical", "Diagonal",
-        "Diagonal-Left"};
+        "Horizontal", "Vertical", "Diagonal", "Diagonal-Left",
+        "Horizontal-Flip", "Vertical-Flip", "Diagonal-Flip", "Diagonal-Left-Flip"};
     public static int[] xS = new int[0];
     public static int[] yS = new int[0];
 
@@ -106,8 +103,21 @@ public class WordData {
             for (int i = 0; i < word.length(); i++) {
                 charPlaceOut[i][word.length()-(i+1)] = word.charAt(i);
             }
+        }else if (angle == "Horizontal-Flip"){
+            charPlaceOut = angleOut(new StringBuilder(word).reverse().toString(), "Horizontal");
+        }else if (angle == "Vertical-Flip"){
+            charPlaceOut = angleOut(new StringBuilder(word).reverse().toString(), "Vertical");
+        }else if (angle == "Diagonal-Flip"){
+            charPlaceOut = angleOut(new StringBuilder(word).reverse().toString(), "Diagonal");
+        }else if (angle == "Diagonal-Left-Flip"){
+            charPlaceOut = angleOut(new StringBuilder(word).reverse().toString(), "Diagonal-Left");
+        }else {
+            System.out.println("Error");
         }
 
         return charPlaceOut;
     }
 }
+//public static final String[] angles = {
+//        "Horizontal", "Vertical", "Diagonal", "Diagonal-Left",
+//        "Horizontal-Flip", "Vertical-Flip", "Diagonal-Flip", "Diagonal-Left-Flip"};
