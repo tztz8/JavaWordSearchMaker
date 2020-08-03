@@ -76,6 +76,10 @@ public class Puzzle extends Thread {
                     System.out.println(ConsoleColors.RED_BOLD + "Error word: \"" + wordsData[i].word + "\" did failed to be added to board with " + trys + " trys" + ConsoleColors.RESET);
                     trys = 0;
                 }
+
+                if (Main.debugShowEverythingFlag){
+                    System.out.println(ConsoleColors.CYAN + "Used " + trys + " trys to fit \"" + wordsData[i].word + "\"" + ConsoleColors.RESET);
+                }
             }while (!works && (!stopFlag));
 
         }
