@@ -91,13 +91,7 @@ public class Main {
             phasePrint("Making the puzzle board");
         }
         long startTime = System.nanoTime();
-        puzzle.start();
-        while (puzzle.isAlive()){
-            if (((double) (System.nanoTime() - startTime) > (double) (1 * 1_000_000_000)) && (!puzzle.stopFlag)){
-                System.out.println("Fail to run at 10 sec");
-                puzzle.stopFlag = true;
-            }
-        }
+        puzzle.makepuzzle();
         if (debugShowEverythingFlag){
             System.out.print(ConsoleColors.BLUE);
             System.out.println("Time to run : " + (System.nanoTime() - startTime) + " nano seconds");
@@ -189,5 +183,27 @@ public class Main {
             words = null;
         }
         return words;
+    }
+
+    // Function to remove the element
+    public static Point[] removeTheElement(Point[] arr, int index){
+
+        if (arr == null || index < 0 || index >= arr.length) {
+            return arr;
+        }
+
+        Point[] anotherArray = new Point[arr.length - 1];
+
+        for (int i = 0, k = 0; i < arr.length; i++) {
+
+            if (i == index) {
+                continue;
+            }
+
+            anotherArray[k++] = arr[i];
+        }
+
+        // return the resultant array
+        return anotherArray;
     }
 }

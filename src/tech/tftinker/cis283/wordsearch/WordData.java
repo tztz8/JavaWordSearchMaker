@@ -1,5 +1,8 @@
 package tech.tftinker.cis283.wordsearch;
 
+import com.sun.source.tree.WhileLoopTree;
+import tech.tftinker.cis283.wordsearch.debug.WordsDebugData;
+
 import java.awt.*;
 import java.util.Arrays;
 import java.util.Random;
@@ -9,18 +12,19 @@ public class WordData {
     public int x,y;
     public char[][] charPlace;
     public boolean failed = false;
+    public WordsDebugData wordsDebugData;
     public static final String[] angles = {
         "Horizontal", "Vertical", "Diagonal", "Diagonal-Left",
         "Horizontal-Flip", "Vertical-Flip", "Diagonal-Flip", "Diagonal-Left-Flip"};
-    public static int[] xS = new int[0];
-    public static int[] yS = new int[0];
+    public static Point[] notUsedPoints = new Point[0];
 
     public WordData(String word, int puzzleBoardSize){
-        if (Main.debugShowEverythingFlag){
-            System.out.print(ConsoleColors.BLUE);
-            System.out.println("Make WordData for " + word);
-            System.out.print(ConsoleColors.RESET);
-        }
+
+        this.wordsDebugData = new WordsDebugData(word);
+        wordsDebugData.print(ConsoleColors.BLUE);
+        wordsDebugData.print("Make WordData for " + word);
+        wordsDebugData.println(ConsoleColors.RESET);
+
         this.word = word;
 
         int rnd = new Random().nextInt(angles.length);
@@ -28,39 +32,40 @@ public class WordData {
 
         charPlace = angleOut();
 
-        boolean works = true;
-        int trys = 0;
-        do {
-            this.x = new Random().nextInt((puzzleBoardSize-word.length())-1);
-            this.y = new Random().nextInt((puzzleBoardSize-word.length())-1);
+        boolean works = false;
+        while (!works){
+            int rndPoint = new Random().nextInt(this.notUsedPoints.length-1);
 
-            trys++;
-
-            if (contains(this.xS, this.x)){
-                if (contains(this.yS, this.y)) {
-                    works = false;
-                }else {
+            if((Main.puzzleSize-word.length()) > this.notUsedPoints[rndPoint].x){
+                if((Main.puzzleSize-word.length()) > this.notUsedPoints[rndPoint].y){
+                    this.x = this.notUsedPoints[rndPoint].x;
+                    this.y = this.notUsedPoints[rndPoint].y;
                     works = true;
+                }else {
+                    works = false;
                 }
             }else {
-                works = true;
+                works = false;
             }
 
-            if (trys > 25){
-                works = true;
-                System.out.println(ConsoleColors.RED_BOLD + "Error word: \"" + word + "\" did failed to make word data " + trys + " trys" + ConsoleColors.RESET);
-                failed = true;
-                trys = 0;
+            if (works){
+                this.notUsedPoints = Main.removeTheElement(this.notUsedPoints, rndPoint);
             }
-        }while (!works);
-
-        if (!false) {
-            this.xS = Arrays.copyOf(this.xS, this.xS.length + 1);
-            this.xS[this.xS.length - 1] = this.x;
-
-            this.yS = Arrays.copyOf(this.yS, this.yS.length + 1);
-            this.yS[this.yS.length - 1] = this.y;
         }
+
+
+        for (int x = 0; x < charPlace.length; x++) {
+            wordsDebugData.print(ConsoleColors.BLUE + ConsoleColors.GREEN_BACKGROUND);
+            for (int y = 0; y < charPlace[x].length; y++) {
+                wordsDebugData.print(charPlace[x][y] + " ");
+            }
+            wordsDebugData.println(ConsoleColors.RESET);
+        }
+    }
+
+    public WordData(String word, int puzzleBoardSize, WordsDebugData wordsDebugData){
+        this(word, puzzleBoardSize);
+        this.wordsDebugData = wordsDebugData;
     }
 
     public static boolean contains(final int[] array, final int v) {

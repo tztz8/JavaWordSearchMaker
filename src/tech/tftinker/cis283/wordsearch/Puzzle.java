@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-public class Puzzle extends Thread {
+public class Puzzle{
 //public class Puzzle {
     public String[] words;
     public WordData[] wordsData;
@@ -12,6 +12,7 @@ public class Puzzle extends Thread {
     public int puzzleBoardSize;
     public char[][] puzzleBoard;
     public char[][] puzzleKeyBoard;
+    public static int MAXTRYS = 300;
 
     public boolean stopFlag = false;
 
@@ -31,6 +32,16 @@ public class Puzzle extends Thread {
                 this.puzzleKeyBoard[x][y] = Main.charBlank;
             }
         }
+
+        int j = 0;
+        for (int x = 0; x < puzzleBoardSize; x++) {
+            for (int y = 0; y < puzzleBoardSize; y++) {
+                WordData.notUsedPoints = Arrays.copyOf(WordData.notUsedPoints, WordData.notUsedPoints.length + 1);
+                WordData.notUsedPoints[j] = new Point(x,y);
+                j++;
+            }
+        }
+
         this.wordsData = new WordData[words.length];
         for (int i = 0; i < words.length; i++) {
             wordsData[i] = new WordData(words[i],puzzleBoardSize);
@@ -38,51 +49,56 @@ public class Puzzle extends Thread {
         if (Main.debugShowEverythingFlag){
             System.out.print(ConsoleColors.BLUE);
             System.out.println("WordData x's and y's");
-            System.out.println("xS ("+WordData.xS.length+"): " + Arrays.toString(WordData.xS));
-            System.out.println("yS ("+WordData.yS.length+"): " + Arrays.toString(WordData.yS));
             System.out.println("PuzzleBoard ID: " + puzzleBoard.toString());
             System.out.println("Key PuzzleBoard ID: " + puzzleKeyBoard.toString());
             System.out.print(ConsoleColors.RESET);
         }
     }
 
-    @Override
-    public void run(){
+    public void makepuzzle(){
         if (Main.debugShowEverythingFlag){
             System.out.print(ConsoleColors.BLUE);
             System.out.println("PuzzleBoard ID: " + puzzleBoard.toString());
             System.out.println("Key PuzzleBoard ID: " + puzzleKeyBoard.toString());
             System.out.print(ConsoleColors.RESET);
         }
-        for (int i = 0; (i < wordsData.length) && (!stopFlag); i++) {
-            boolean works = true;
-            int trys = 0;
-            do {
-                if (!works){
-                    wordsData[i] = new WordData(wordsData[i].word, puzzleBoardSize);
-                }
-                trys++;
-                if (checkWordPlace(wordsData[i], puzzleBoard) || (!wordsData[i].failed)){
+
+        for (int i = 0; i < wordsData.length; i++) {
+            int j;
+            for (j = 0; j < MAXTRYS; j++) {
+                if(checkWordPlace(wordsData[i], puzzleBoard)){
                     puzzleBoard = placeWord(wordsData[i], puzzleBoard);
                     puzzleKeyBoard = placeWord(wordsData[i], puzzleKeyBoard);
-                    works = true;
-                    trys = 0;
-                } else{
-                    works = false;
-                }
 
-                if (trys > 15 || wordsData[i].failed){
-                    works = true;
-                    System.out.println(ConsoleColors.RED_BOLD + "Error word: \"" + wordsData[i].word + "\" did failed to be added to board with " + trys + " trys" + ConsoleColors.RESET);
-                    trys = 0;
-                }
+                    if (Main.debugShowEverythingFlag){
+                        String message = ConsoleColors.CYAN + "Used " + (j+1) + " trys to fit \"" + wordsData[i].word + "\"" + ConsoleColors.RESET;
+                        System.out.println(message);
+                        wordsData[i].wordsDebugData.println(message);
+                    }
 
-                if (Main.debugShowEverythingFlag){
-                    System.out.println(ConsoleColors.CYAN + "Used " + trys + " trys to fit \"" + wordsData[i].word + "\"" + ConsoleColors.RESET);
-                }
-            }while (!works && (!stopFlag));
+                    break;
 
+                }else{
+
+                    wordsData[i] = new WordData(wordsData[i].word, puzzleBoardSize, wordsData[i].wordsDebugData);
+
+                    if (Main.debugShowEverythingFlag) {
+                        String message = ConsoleColors.CYAN + "Reset " + wordsData[i].word + " data" + ConsoleColors.RESET;
+                        System.out.println(message);
+                        wordsData[i].wordsDebugData.println(message);
+                    }
+
+                }
+            }
+            if (j == MAXTRYS || wordsData[i].failed){
+                String message = ConsoleColors.RED_BOLD + "Error word: \"" + wordsData[i].word + "\" did failed to be added to board with " + j + " trys" + ConsoleColors.RESET;
+                System.out.println(message);
+                wordsData[i].wordsDebugData.println(message);
+            }
         }
+
+
+
         if (Main.debugShowEverythingFlag && (!stopFlag)){
             System.out.print(ConsoleColors.BLUE);
             System.out.println("done inserting words");
@@ -101,8 +117,12 @@ public class Puzzle extends Thread {
             }
         }
 
-        if (stopFlag){
-            System.out.println("Puzzle maker id: " + currentThread().getId() + " , stoped before being done");
+        if (Main.debugShowEverythingFlag){
+            for (int i = 0; i < this.wordsData.length; i++) {
+                System.out.println("");
+                this.wordsData[i].wordsDebugData.printData();
+            }
+            System.out.println("");
         }
     }
 
@@ -193,12 +213,30 @@ public class Puzzle extends Thread {
         boolean works = true;
         for (int xPrime = 0; xPrime < wordData.word.length(); xPrime++) {
             for (int yPrime = 0; yPrime < wordData.word.length(); yPrime++) {
-                if (puzzleBoard[wordData.x+xPrime][wordData.y+yPrime] != wordData.charPlace[xPrime][yPrime]){
-                    if (puzzleBoard[wordData.x+xPrime][wordData.y+yPrime] != Main.charBlank){
+                int x = wordData.x+xPrime;
+                int y = wordData.y+yPrime;
+                if (puzzleBoard[x][y] != wordData.charPlace[xPrime][yPrime]){
+                    if (puzzleBoard[x][y] != Main.charBlank){
                         works = false;
+                        wordData.wordsDebugData.println(ConsoleColors.GREEN + ConsoleColors.RED_BACKGROUND + "Failed to place " + wordData.word + ConsoleColors.RESET);
+                        wordData.wordsDebugData.println(ConsoleColors.GREEN + "[\'" +
+                                puzzleBoard[wordData.x+xPrime][wordData.y+yPrime] + "\',\'" +
+                                wordData.charPlace[xPrime][yPrime] + "\'] at [" +
+                                xPrime + "," + yPrime + "] in word and at [" +
+                                x + "," + y + "] in puzzle"+ ConsoleColors.RESET);
                         break;
+                    }else {
+                        wordData.wordsDebugData.println(ConsoleColors.GREEN + "It was a Blank char" + ConsoleColors.RESET);
                     }
+                }else {
+                    wordData.wordsDebugData.println(ConsoleColors.GREEN + "It was the same char" + ConsoleColors.RESET);
                 }
+                wordData.wordsDebugData.println(ConsoleColors.GREEN + "[\'" +
+                        puzzleBoard[wordData.x+xPrime][wordData.y+yPrime] + "\',\'" +
+                        wordData.charPlace[xPrime][yPrime] + "\']" + ConsoleColors.RESET);
+            }
+            if (!works){
+                break;
             }
         }
         return works;
