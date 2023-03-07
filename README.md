@@ -1,4 +1,7 @@
 # JavaWordSearchMaker
+
+> !!! BAD CODE !!!
+
 Remade my CIS 283 PDF Word Search final project; using java insted of ruby.
 Useing PDFBox 2.0.20 to make the pdf
 
